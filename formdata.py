@@ -1,26 +1,17 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, TextAreaField, SubmitField, RadioField, SelectField
 import urllib3
 import time
 import requests
 import re
 from lxml import etree
+import logging
 from API_SSH import API
+
+# logging.basicConfig(level=logging.NOTSET)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-class TableElement(FlaskForm):
-    formheader = ['CMS', 'FW','Uptime(hours)','ModuleStatus','WebRTCCalls','LyncCalls','SIPCalls','ActiveMeetings','InboundBW(Mbps)','OutboundBW(Mbps)','Alarms']
-    CLT01data=[StringField('CLT01') for i in range(len(formheader))]
-    CLT02data = [StringField('CLT02') for i in range(len(formheader))]
-    CMSdata = [CLT01data,CLT02data]
-    CMSnames=['CLT01','CLT02']
-    for n,CMS in enumerate(CMSdata):
-        for element in CMS:
-            element.data=CMSnames[n]
-
-
 class CMSStatus():
+
     def __init__(self, hostname, port, username, password,param_status):
         self.hostname = hostname
         self.port = port
@@ -32,8 +23,8 @@ class CMSStatus():
         url = 'https://{}:{}/authenticate.html'.format(self.hostname, self.port)
         self.initResponse = requests.request('GET', url, verify=False)
         self.acanoSessionKey = re.findall('<input type="hidden" name ="Acano-Session-Key" value ="(.*?)"/>', str(self.initResponse.content))[0]
-        # print(self.initResponse.headers['Set-Cookie'])
-        # print(self.acanoSessionKey)
+        print(self.initResponse.headers['Set-Cookie'])
+        print(self.acanoSessionKey)
 
     def login(self):  # request /authenticate.html page to get real cookie,
         self.obtainSession()
@@ -66,11 +57,26 @@ class CMSStatus():
         # print(htmlcontent.xpath(('//entries/entry[@id="mediaStatus"]/value'))[0].text)
         for e in self.param_status:
             if e =='uptime':
-                api = API.Get_put_post(self.hostname, self.username, self.password)
-                htmluptime = api.get('system/status')
-                seconduptime = htmluptime.xpath('//status/uptimeSecond')[0]
-                hoursuptime=seconduptime//3600
-                self.all_status.append(hoursuptime)
+                uptime=(htmlcontent.xpath(('//entries/entry[@id="%s"]/value' %e))[0].text)
+                uptime=uptime.split(',')
+                uptimeHours=0
+                realhours=0
+                for n,t in enumerate(uptime):
+                    t=t.split(' ')
+                    if t[1]=='days':
+                        t=int(t[-2])
+                        t=t*24
+                    elif t[1]=='minutes':
+                        t=int(t[-2])
+                        t=t//60
+                    elif t[1]=='seconds':
+                        t=int(t[0])
+                        t=t//3600
+                    else:
+                        print(t)
+                        t=int(t[-2])
+                    uptimeHours +=int(t)
+                self.all_status.append(uptimeHours)
             elif e=="alarms":
                 api = API.Get_put_post(self.hostname,self.username,self.password)
                 htmlalarms=api.get('system/alarms')
@@ -83,21 +89,11 @@ class CMSStatus():
             else:
                 self.all_status.append(htmlcontent.xpath(('//entries/entry[@id="%s"]/value' %e))[0].text)
         print(self.all_status)
-        return (self.all_status)
 
-if __name__=='__main__':
-    from API_SSH import API
 
-    CMSInfor={}
-    CMSInfor={}
-    CMSLogin={'CMSlogin':['CLT01','144.131.216.96','admin','admin'],}
-    CMSInfor={
-              'system':['system/status',['softwareversion','uptimeseconds','','calllegsactive','audiobitrateoutgoing'
-                                           ,'videobitrateoutgoing','audiobitrateincoming','videobitrateincoming']],
-              'alarms':['system/alarms',['total']],
-              'load':['system/load',['load']],
-              'loadlimit':['system/configuration/cluster',['loadlimit']]
-              }
-    CMSdata=getPlatformData(CMSLogin,CMSInfor)
-    print(CMSdata)
-
+if __name__ == '__main__':
+    param_status=[]
+    param_status=["version","uptime","mediaStatus","numClientCalls","numLyncCalls","numSipCalls","numConfs",
+                  "mediaBitRateOutgoing","mediaBitRateIncoming","alarms"]
+    CMS = CMSStatus('144.131.216.94', 443, 'admin', 'admin',param_status)
+    CMS.status()

@@ -4,7 +4,9 @@ from threading import Lock
 from flask import Flask, render_template,request
 from flask_socketio import SocketIO
 from dashboard_02form import TableElement
-
+from lxml import etree
+from dashboard_02form import CMSStatus
+from API_SSH import API
 
 async_mode = None
 app = Flask(__name__)
@@ -17,19 +19,31 @@ thread_lock = Lock()
 
 # 后台线程 产生数据，即刻推送至前端
 def background_thread():
+    param_status = ["version", "uptime", "mediaStatus", "numClientCalls", "numLyncCalls", "numSipCalls", "numConfs",
+                    "mediaBitRateOutgoing", "mediaBitRateIncoming", "alarms"]
     count = 0
     i=0
-    CMSdata = [['CLT01', 1, 2, 3, 4,5,6,7],['CLT02', 0, 1, 2, 3,4,5,6]]
+    CMSName_IPs=['144.131.216.94','144.131.216.96']
+    CMSdata = [['CLT01', 1, 2, 3, 4,5,6,7,8,9,10],['CLT02', 0, 1, 2, 3,4,5,6,7,8,9]]
     while True:
-        socketio.sleep(3)
+        socketio.sleep(5)
         count += 1
         t = time.strftime('%M:%S', time.localtime())
         i+=1
         def CMSplusone(CMSdata):
-            for oneCMSData in CMSdata:
-                for n,element in enumerate(oneCMSData):
-                    if n != 0:
-                        oneCMSData[n] +=1
+            for n,oneCMSData in enumerate(CMSdata):
+                # for n,element in enumerate(oneCMSData):
+                #     if n != 0:
+                #         oneCMSData[n] +=1
+                CMS = CMSStatus(CMSName_IPs[n], 443, 'admin', 'admin', param_status)
+                try:
+                    print(CMS.status())
+                    print(oneCMSData[1:]+'8888')
+                    oneCMSData[1:]=CMS.status()
+                    print(oneCMSData[1:])
+                except Exception as error:
+                    oneCMSData[1:]=['-']*10
+                    print(error)
             return (CMSdata)
         result=CMSplusone(CMSdata)
 
