@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>dashboard</title>
+
+    <meta http-equiv="refresh" content="10">
+
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <script type="text/javascript" src="../static/js/jquery.min.js"></script>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>name</th>
+                    <th>version</th>
+                    <th>uptime</th>
+                    <th>mediaStatus</th>
+                    <th>numClientCalls</th>
+                    <th>numLyncCalls</th>
+                    <th>numSipCalls</th>
+                    <th>numConfs</th>
+                    <th>mediaBitRateOutgoing</th>
+                    <th>mediaBitRateIncoming</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for status in statusList %}
+                <tr>
+                    <td>{{ status.name }}</td>
+                    <td>{{ status.version }}</td>
+                    <td>{{ status.uptime }}</td>
+                    <td>{{ status.mediaStatus }}</td>
+                    <td>{{ status.numClientCalls }}</td>
+                    <td>{{ status.numLyncCalls }}</td>
+                    <td>{{ status.numSipCalls }}</td>
+                    <td>{{ status.numConfs }}</td>
+                    <td>{{ status.mediaBitRateOutgoing }}</td>
+                    <td>{{ status.mediaBitRateIncoming }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
