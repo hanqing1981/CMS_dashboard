@@ -13,9 +13,6 @@ try:
 except:
     pass
 
-
-
-
 class Get_put_post():
     def __init__(self,ip,username,password):
         self.ip=ip

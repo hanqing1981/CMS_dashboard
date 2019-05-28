@@ -20,66 +20,67 @@
 </head>
 
 <body>
-    <form method="get">
-        {{ form.hidden_tag() }}
-        <div id="main" style="height:500px;border:1px solid #ccc;padding:10px;">
+    <!--<form method="get">-->
+        <!--{% form.cmsStatus %}-->
+        <!--{{ form.hidden_tag() }}-->
+        <!--<div id="main" style="height:500px;border:1px solid #ccc;padding:10px;">-->
 
-            <table class="CMSTable">
-                <tr>
-                    {% for header in form.formheader %}
-                        <th>{{header}}</th>
-                    {% endfor %}
-                </tr>
-                {% for CMS in form.CMSdata %}
+            <!--<table class="CMSTable">-->
+                <!--<tr>-->
+                    <!--{% for header in form.formheader %}-->
+                        <!--<th>{{header}}</th>-->
+                    <!--{% endfor %}-->
+                <!--</tr>-->
+                <!--{% for CMS in form.cmsStatus %}-->
 
-                        <tr>
-                            {% for cmsValue in CMS %}
-                                <td class="{{cmsValue.data}}">{{cmsValue.data}}</td>
-                            {% endfor %}
-                        </tr>
+                        <!--<tr>-->
+                            <!--{% for cmsValue in CMS %}-->
+                                <!--<td class="{{cmsValue.data}}">{{cmsValue.data}}</td>-->
+                            <!--{% endfor %}-->
+                        <!--</tr>-->
 
-                {% endfor %}
-        </div>
+                <!--{% endfor %}-->
+        <!--</div>-->
 
-    </form>
-    <script type="text/javascript">
-        var mydata=document.getElementById('main');
-
-
-
-        cpu = ['CLT01',0,0,0,0,0,0,0,0,0,0]
+    <!--</form>-->
+    <!--<script type="text/javascript">-->
+        <!--var mydata=document.getElementById('main');-->
 
 
-    //准备好统一的 callback 函数
-    var update_mychart = function (res) {
-        //res是json格式的response对象
-        // 准备数据
-        console.log(res.data[1]);
-        cpu=((res.data[1]));
 
-        // 填入数据
-        <!--mydata.innerHTML=cpu;-->
-        for (var i=0; i<cpu.length;i++){
-            var CLTdata=document.getElementsByClassName(cpu[i][0]);
-           for (var j=0; j<cpu[i].length;j++){
-                CLTdata[j].innerHTML=cpu[i][j];
-           }
-        }
+        <!--cpu = ['CLT01',0,0,0,0,0,0,0,0,0,0]-->
 
-    };
 
-    // 建立socket连接，等待服务器“推送”数据，用回调函数更新图表
-    $(document).ready(function() {
-        namespace = '/platformdashboardconnect';
-        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    <!--//准备好统一的 callback 函数-->
+    <!--var update_mychart = function (res) {-->
+        <!--//res是json格式的response对象-->
+        <!--// 准备数据-->
+        <!--console.log(res.data[1]);-->
+        <!--cpu=((res.data[1]));-->
 
-        socket.on('server_response', function(res) {
-            <!--console.log(res);-->
-            update_mychart(res);
-        });
+        <!--// 填入数据-->
+        <!--&lt;!&ndash;mydata.innerHTML=cpu;&ndash;&gt;-->
+        <!--for (var i=0; i<cpu.length;i++){-->
+            <!--var CLTdata=document.getElementsByClassName(cpu[i][0]);-->
+           <!--for (var j=0; j<cpu[i].length;j++){-->
+                <!--CLTdata[j].innerHTML=cpu[i][j];-->
+           <!--}-->
+        <!--}-->
 
-    });
+    <!--};-->
 
-    </script>
+    <!--// 建立socket连接，等待服务器“推送”数据，用回调函数更新图表-->
+    <!--$(document).ready(function() {-->
+        <!--namespace = '/platformdashboardconnect';-->
+        <!--var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);-->
+
+        <!--socket.on('server_response', function(res) {-->
+            <!--&lt;!&ndash;console.log(res);&ndash;&gt;-->
+            <!--update_mychart(res);-->
+        <!--});-->
+
+    <!--});-->
+
+    <!--</script>-->
 </body>
 </html>
