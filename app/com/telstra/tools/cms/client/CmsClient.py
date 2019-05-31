@@ -7,6 +7,9 @@ from app.com.telstra.tools.cms.model.API import Get_put_post
 
 # obtain cms/index.html page information
 
+# CMS needs two cookies to get index page
+
+
 class CmsClient():
     __session = None
 
@@ -48,7 +51,7 @@ class CmsClient():
         print('the old session is available')
         return True
 
-    def __login(self):  # request /authenticate.html page to get real cookie,
+    def __login(self):  # request /authenticate.html page to get real cookie (second cookie)
         if not self.__checkSession():
             validateData = self.__obtainSession()
 
