@@ -14,6 +14,7 @@ class CmsStatus:
                 self.uptime = entry['value']
             elif id == 'mediaStatus':
                 self.mediaStatus = entry['value']
+                self.mediaStatus=self.mediaStatus.split(' ')[0]
             elif id == 'numClientCalls':
                 self.numClientCalls = entry['value']
             elif id == 'numLyncCalls':
@@ -26,3 +27,20 @@ class CmsStatus:
                 self.mediaBitRateOutgoing = entry['value']
             elif id == 'mediaBitRateIncoming':
                 self.mediaBitRateIncoming = entry['value']
+
+
+class CmsStatusDefault:
+    name = None
+
+    def __init__(self, name):
+        self.name = name
+        self.version ='-'
+        self.uptime ='-'
+        self.mediaStatus = '-'
+        self.numClientCalls = '-'
+        self.numLyncCalls = '-'
+        self.numSipCalls = '-'
+        self.numConfs = '-'
+        self.mediaBitRateOutgoing = '-'
+        self.mediaBitRateIncoming = '-'
+        # self.alarms = '-'

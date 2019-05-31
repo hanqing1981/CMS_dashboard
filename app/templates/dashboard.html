@@ -4,6 +4,7 @@
 
     <title>dashboard</title>
 
+    <!--refresh webpgage every 10 secs-->
     <meta http-equiv="refresh" content="10">
 
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
@@ -12,21 +13,23 @@
 <body>
 
 <div class="container-fluid">
+
     <div class="row">
         <div class="col-12">
-            <table class="table table-hover">
+            <table class="table table-border table-hover">
                 <thead>
                 <tr>
                     <th>name</th>
                     <th>version</th>
                     <th>uptime</th>
-                    <th>mediaStatus</th>
-                    <th>numClientCalls</th>
+                    <th>moduleStatus</th>
+                    <th>numWebRTCCalls</th>
                     <th>numLyncCalls</th>
                     <th>numSipCalls</th>
                     <th>numConfs</th>
-                    <th>mediaBitRateOutgoing</th>
-                    <th>mediaBitRateIncoming</th>
+                    <th>mediaOutgoing</th>
+                    <th>mediaIncoming</th>
+                    <th>totalAlarms</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -42,6 +45,7 @@
                     <td>{{ status.numConfs }}</td>
                     <td>{{ status.mediaBitRateOutgoing }}</td>
                     <td>{{ status.mediaBitRateIncoming }}</td>
+                    <td>{{ status.alarms}}</td>
                 </tr>
                 {% endfor %}
                 </tbody>

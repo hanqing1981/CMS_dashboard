@@ -1,11 +1,11 @@
 import re
 import time
-
 import requests
 import xmltodict
+from app.com.telstra.tools.cms.model.CmsStatus import CmsStatus,CmsStatusDefault
+from app.com.telstra.tools.cms.model.API import Get_put_post
 
-from app.com.telstra.tools.cms.model.CmsStatus import CmsStatus
-
+# obtain cms/index.html page information
 
 class CmsClient():
     __session = None
@@ -67,15 +67,36 @@ class CmsClient():
             self.__session = authenticateResponse.headers['Set-Cookie']
 
     def status(self):  # request status page with real cookie
-        self.__login()
+        cmsapi=Get_put_post(self.hostname, self.username, self.password)
+        self.systemalarms=cmsapi.apiConnTest()
+        if self.systemalarms:
+            self.connResult=1
+        else:
+            self.connResult = 0
+            return (CmsStatusDefault(self.name))
+        try:
+            self.__login()
+            url = 'https://{}:{}/index.xml?_={}'.format(self.hostname, self.port, int(time.time() * 1000))
+            header = {
+                "Cookie": self.__session
+            }
+            statusResponse=requests.request('GET', url, verify=False, headers=header)
 
-        url = 'https://{}:{}/index.xml?_={}'.format(self.hostname, self.port, int(time.time() * 1000))
-        header = {
-            "Cookie": self.__session
-        }
-        statusResponse=requests.request('GET', url, verify=False, headers=header)
+            return CmsStatus(self.name, statusResponse.content)
+        except Exception as error:
+            print (error)
+            self.connResult=0
+            return (CmsStatusDefault(self.name))
 
-        return CmsStatus(self.hostname, statusResponse.content)
+
+
+    def alarms(self):
+        if self.connResult:
+            totalalarms=self.systemalarms.xpath('//alarms/@total')
+            return(totalalarms[0])
+        else:
+            return('-')
+
 
 if __name__=='__main__':
     client = CmsClient('test', '10.79.246.177', 8443, 'admin', 'C!sc0123')
