@@ -20,7 +20,7 @@ class CmsClient():
         self.username = username
         self.password = password
 
-    def __obtainSession(self):  # request login page to get first Cookie and session key
+    def __obtainSession(self):  # GET login page to get first Cookie (in header) and acanoSessionKey - do it via browswer not postman
         try:
             url = 'https://{}:{}/authenticate.html'.format(self.hostname, self.port)
             initResponse = requests.request('GET', url, verify=False)
@@ -37,13 +37,13 @@ class CmsClient():
             return False
 
         try:
-            url = 'https://{}:{}/chauthtok.xml?_={}'.format(self.hostname, self.port, int(time.time() * 1000))
+            url = 'https://{}:{}/chauthtok.xml?_={}'.format(self.hostname, self.port, int(time.time() * 1000)) # login page after authetication
             header = {
                 "Cookie": self.__session
             }
             chauthtokResponse=requests.request('GET', url, verify=False, headers=header)
             data = xmltodict.parse(chauthtokResponse.content)
-            data['data']['menu']
+            data['data']['menu']   # check if the item is available or not, if yes, then session is still valid
         except:
             print('the old session is not available')
             return False
@@ -66,7 +66,8 @@ class CmsClient():
                 'Acano-Session-Key': validateData['acanoSessionKey']
             }
 
-            authenticateResponse = requests.request('POST', url, headers=header, data=data, verify=False)
+            authenticateResponse = requests.request('POST', url, headers=header, data=data, verify=False) # to get real cookie  in header - do it via browser
+            # cookie record all connection and authenticaion information. with the cookie, no need authenticate anymore
             self.__session = authenticateResponse.headers['Set-Cookie']
 
     def status(self):  # request status page with real cookie
